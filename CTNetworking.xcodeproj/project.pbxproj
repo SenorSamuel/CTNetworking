@@ -239,8 +239,8 @@
 		4A1E17A02045585A00BDBF7B /* BaseAPIManager */ = {
 			isa = PBXGroup;
 			children = (
-				4A1E17A12045585A00BDBF7B /* CTAPIBaseManager.m */,
 				4A1E17A22045585A00BDBF7B /* CTAPIBaseManager.h */,
+				4A1E17A12045585A00BDBF7B /* CTAPIBaseManager.m */,
 			);
 			path = BaseAPIManager;
 			sourceTree = "<group>";
@@ -684,7 +684,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GQ7926NZY4;
+				DEVELOPMENT_TEAM = U4TFFP6YD3;
 				INFOPLIST_FILE = CTNetworking/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = casa.CTNetworking;
@@ -699,7 +699,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GQ7926NZY4;
+				DEVELOPMENT_TEAM = U4TFFP6YD3;
 				INFOPLIST_FILE = CTNetworking/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = casa.CTNetworking;

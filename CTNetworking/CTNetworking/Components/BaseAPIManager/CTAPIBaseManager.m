@@ -51,7 +51,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
         
         _errorMessage = nil;
         _errorType = CTAPIManagerErrorTypeDefault;
-
+        
         _memoryCacheSecond = 3 * 60;
         _diskCacheSecond = 3 * 60;
         
@@ -118,18 +118,21 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
 {
     self.successBlock = successCallback;
     self.failBlock = failCallback;
-
+    
     return [self loadDataWithParams:params];
 }
 
 - (NSInteger)loadDataWithParams:(NSDictionary *)params
 {
     NSInteger requestId = 0;
+    //samuel:添加 pagesize,pageNum这种参数
     NSDictionary *reformedParams = [self reformParams:params];
     if (reformedParams == nil) {
         reformedParams = @{};
     }
+    //samuel:拦截器判断是否调用 api,默认为YES,分为内部拦截和外部拦截
     if ([self shouldCallAPIWithParams:reformedParams]) {
+        //samuel:判断参数是否正确的validator
         CTAPIManagerErrorType errorType = [self.validator manager:self isCorrectWithParamsData:reformedParams];
         if (errorType == CTAPIManagerErrorTypeNoError) {
             
@@ -144,6 +147,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
                 response = [[CTCacheCenter sharedInstance] fetchDiskCacheWithServiceIdentifier:self.child.serviceIdentifier methodName:self.child.methodName params:reformedParams];
             }
             
+            //samuel:拿到缓存接直接返回 response
             if (response != nil) {
                 [self successedOnCallingAPI:response];
                 return 0;
@@ -152,8 +156,9 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
             // 实际的网络请求
             if ([self isReachable]) {
                 self.isLoading = YES;
-                
+                //samuel:service区分 api提供方,可以是本公司的,也可以是封装第三方sdk
                 id <CTServiceProtocol> service = [[CTServiceFactory sharedInstance] serviceWithIdentifier:self.child.serviceIdentifier];
+                //samuel:这个方法中传公共参数
                 NSURLRequest *request = [service requestWithParams:reformedParams methodName:self.child.methodName requestType:self.child.requestType];
                 request.service = service;
                 [CTLogger logDebugInfoWithRequest:request apiName:self.child.methodName service:service];
@@ -179,7 +184,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
                 params[kCTAPIBaseManagerRequestID] = requestId;
                 [self afterCallingAPIWithParams:params];
                 return [requestId integerValue];
-            
+                
             } else {
                 [self failedOnCallingAPI:nil withErrorType:CTAPIManagerErrorTypeNoNetWork];
                 return requestId;
@@ -195,7 +200,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
 #pragma mark - api callbacks
 - (void)successedOnCallingAPI:(CTURLResponse *)response
 {
-
+    
     self.isLoading = NO;
     self.response = response;
     
@@ -264,7 +269,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
                                                                      }];
         return;
     }
-
+    
     // 可以自动处理的错误
     // user token 过期，重新刷新
     if (errorType == CTAPIManagerErrorTypeNeedAccessToken) {
@@ -281,7 +286,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
     if (shouldContinue == NO) {
         return;
     }
-
+    
     // 常规错误
     if (errorType == CTAPIManagerErrorTypeNoNetWork) {
         self.errorMessage = @"无网络连接，请检查网络";
@@ -314,15 +319,15 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
 #pragma mark - method for interceptor
 
 /*
-    拦截器的功能可以由子类通过继承实现，也可以由其它对象实现,两种做法可以共存
-    当两种情况共存的时候，子类重载的方法一定要调用一下super
-    然后它们的调用顺序是BaseManager会先调用子类重载的实现，再调用外部interceptor的实现
-    
-    notes:
-        正常情况下，拦截器是通过代理的方式实现的，因此可以不需要以下这些代码
-        但是为了将来拓展方便，如果在调用拦截器之前manager又希望自己能够先做一些事情，所以这些方法还是需要能够被继承重载的
-        所有重载的方法，都要调用一下super,这样才能保证外部interceptor能够被调到
-        这就是decorate pattern
+ 拦截器的功能可以由子类通过继承实现，也可以由其它对象实现,两种做法可以共存
+ 当两种情况共存的时候，子类重载的方法一定要调用一下super
+ 然后它们的调用顺序是BaseManager会先调用子类重载的实现，再调用外部interceptor的实现
+ 
+ notes:
+ 正常情况下，拦截器是通过代理的方式实现的，因此可以不需要以下这些代码
+ 但是为了将来拓展方便，如果在调用拦截器之前manager又希望自己能够先做一些事情，所以这些方法还是需要能够被继承重载的
+ 所有重载的方法，都要调用一下super,这样才能保证外部interceptor能够被调到
+ 这就是decorate pattern
  */
 - (BOOL)beforePerformSuccessWithResponse:(CTURLResponse *)response
 {
