@@ -89,6 +89,7 @@ NSString * const kCTApiProxyValidateResultKeyResponseString = @"kCTApiProxyValid
         NSNumber *requestID = @([dataTask taskIdentifier]);
         [self.dispatchTable removeObjectForKey:requestID];
         
+        //samuel: 字典包含两个键值对,一个是 json 字符串,另一个会是 json 对象
         NSDictionary *result = [request.service resultWithResponseObject:responseObject response:response request:request error:&error];
         // 输出返回数据
         CTURLResponse *CTResponse = [[CTURLResponse alloc] initWithResponseString:result[kCTApiProxyValidateResultKeyResponseString]

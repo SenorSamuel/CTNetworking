@@ -211,7 +211,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
     }
     
     [self removeRequestIdWithRequestID:response.requestId];
-    
+    //1. validator 检查响应参数是否有误
     CTAPIManagerErrorType errorType = [self.validator manager:self isCorrectWithCallBackData:response.content];
     if (errorType == CTAPIManagerErrorTypeNoError) {
         
@@ -230,7 +230,7 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
                                                                 cacheTime:self.diskCacheSecond];
             }
         }
-        
+        //2.
         if ([self.interceptor respondsToSelector:@selector(manager:didReceiveResponse:)]) {
             [self.interceptor manager:self didReceiveResponse:response];
         }
