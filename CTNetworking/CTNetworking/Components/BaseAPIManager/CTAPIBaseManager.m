@@ -250,6 +250,46 @@ NSString * const kCTAPIBaseManagerRequestID = @"kCTAPIBaseManagerRequestID";
     }
 }
 
+/*
+1. 关于 errorMessage: 不要在APIMannager里面做提示，真的要写提示，就把提示写在errorMessage里面，然后在回调的方法中由delegate的实现者决定是否要展示，Mananger也没有展示错误信息的权利，它只需要负责生成错误信息交付出去就好了。
+(1) 设置 errorMessage
+- (CTAPIManagerErrorType)manager:(CTAPIBaseManager *)manager isCorrectWithParamsData:(NSDictionary *)data{
+     if ([data[@"PHONE"] length] > 11) {
+     self.errorMessage = @"手机号不能超过11位";
+     return NO;
+     }
+     return YES;
+ }
+
+(2) 在 delegate 回调方法中进行 errorMessage 的处理
+ - (void)managerCallAPIDidFailed:(CTAPIBaseManager *)manager
+{
+ if (manager.errorType == GTIAPIManagerErrorTypeDefault) {
+ //返回数据失败处理
+ } else if (manager.errorType == GTIAPIManagerErrorTypeParamsError) {
+ //验证参数失败处理
+ NSLog(@"errorMessage:%@", manager.errorMessage);
+ //提示errorMessage
+ } else if (manager.errorType == GTIAPIManagerErrorTypeTimeout) {
+ //请求超时处理
+ } else if (manager.errorType == GTIAPIManagerErrorTypeNoContent) {
+ //请求成功，返回数据不正确
+ } else if (manager.errorType == GTIAPIManagerErrorTypeNoNetWork) {
+ //没有网络处理
+ }
+}
+ 
+(3) 每次请求无网络的处理,子类APIManager中,设置 errorMessage
+ - (BOOL)beforePerformFailWithResponse:(CTURLResponse *)response
+{
+ [super beforePerformFailWithResponse:response];
+ if (self.errorType == CTAPIManagerErrorTypeNoNetWork) {
+    self.errorMessage = @"无网络连接，请检查网络";
+ }
+ return YES;
+}
+
+*/
 - (void)failedOnCallingAPI:(CTURLResponse *)response withErrorType:(CTAPIManagerErrorType)errorType
 {
     self.isLoading = NO;

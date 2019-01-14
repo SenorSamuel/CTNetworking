@@ -25,6 +25,26 @@
     return self;
 }
 
+#pragma mark - override
+-(NSInteger)loadData{
+    
+    //策略1:当正在请求的时候,忽略后续连续发的请求
+    if (!self.isLoading) {
+        return [super loadData];
+    }else{
+        NSLog(@"忽略正在进行的网络请求");
+        return 0;
+    }
+    
+//    //策略2:当正在请求的时候,需要取消之前的请求,发送后续的请求
+//    if (self.isLoading) {
+//        [self cancelAllRequests];
+//        return [super loadData];
+//    }else{
+//        return [super loadData];
+//    }
+}
+
 #pragma mark - CTAPIManager
 - (NSString *_Nonnull)methodName
 {
