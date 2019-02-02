@@ -32,7 +32,7 @@
     if (!self.isLoading) {
         return [super loadData];
     }else{
-        NSLog(@"忽略正在进行的网络请求");
+        NSLog(@"忽略后续连续发的请求");
         return 0;
     }
     
@@ -61,7 +61,7 @@
     return CTAPIManagerRequestTypeGet;
 }
 
-#pragma mark - CTAPIManagerParamSource
+#pragma mark - @protocol CTAPIManagerParamSource
 - (NSDictionary *)paramsForApi:(CTAPIBaseManager *)manager
 {
     return nil;
